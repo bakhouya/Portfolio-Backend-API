@@ -13,6 +13,7 @@ media/
 venv/
 env/
 
+
 # IDE
 .vscode/
 .idea/
