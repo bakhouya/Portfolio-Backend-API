@@ -18,9 +18,9 @@ from django.conf.urls.static import static
 # ========================================================================================
 schema_view = get_schema_view(
     openapi.Info(
-        title="Property Management System API",
+        title="Portfolio App API",
         default_version='v1',
-        description="API documentation for the Property Management System",
+        description="API documentation for the Portfolio App",
     ),
     public=True,
     permission_classes=(permissions.AllowAny,),

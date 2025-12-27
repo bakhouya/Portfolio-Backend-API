@@ -72,6 +72,7 @@ class Profile(models.Model):
 
 
 # ==================================================================================
+# About Section Model 
 # ==================================================================================
 class About(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)

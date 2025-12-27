@@ -1,12 +1,19 @@
 # ======================================================================================
 # imports 
 # ======================================================================================
-from django.urls import path
-from .views import (CustomLoginView, AdminUserView, AdminProfileView, PortfolioView)
+from django.urls import path, include
+from rest_framework.routers import DefaultRouter
+from .views import (CustomLoginView, AdminUserView, AdminProfileView, PortfolioView,AboutViewSet, PublicAboutViewSet)
 from rest_framework_simplejwt.views import (TokenObtainPairView, TokenRefreshView,)
 # ======================================================================================
 
-
+# ======================================================================================
+# default router for GRUD about sections
+# ======================================================================================
+router = DefaultRouter()
+router.register(r'ad/accounts/about', AboutViewSet, basename='Admin_about')  
+router.register(r'accounts/about', PublicAboutViewSet, basename='Public_about')  
+# ======================================================================================
 
 
 # ======================================================================================
@@ -23,8 +30,8 @@ urlpatterns = [
     path('ad/accounts/profile/', AdminProfileView.as_view(), name='Profile'),
     # get data user and profile 
     path('accounts/user/data/', PortfolioView.as_view(), name='User_data'),
-
-
+    # include GRUD endponts section about
+    path('', include(router.urls)),
 
 ]
 # ======================================================================================
