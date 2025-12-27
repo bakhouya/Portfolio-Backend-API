@@ -1,4 +1,6 @@
 
+from rest_framework import  permissions
+
 
 
 # ========================================================================================= 
@@ -32,6 +34,22 @@ def handle_file_update(new_file, old_file):
 # ========================================================================================= 
 
 
-
+# =====================================================================================================================
+# A custom permission used to verify that the current user
+# is the same user associated with the object (the true owner of the data).
+# Purpose:
+# - Prevent any user from modifying or accessing an object they do not own.
+# - Ensure that sensitive operations (modify/delete) are performed only by the owner.
+# How it works:
+# - The user associated with the object (obj.user) is compared
+# with the user who submitted the request (request.user).
+# Result:
+# - Access is granted if the user is the owner.
+# - The request is denied if the user is not.
+# =====================================================================================================================
+class IsOwnerAdmin(permissions.BasePermission):
+    def has_object_permission(self, request, view, obj):
+        return obj.user == request.user
+# =====================================================================================================================
 
 
