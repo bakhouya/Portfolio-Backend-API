@@ -190,7 +190,7 @@ class AboutSerializer(serializers.ModelSerializer):
 
     # =====================================================================
     # Dynamic validation
-    # Verification rules (USER_RULES) are applied.
+    # Verification rules (ABOUT_RULES) are applied.
     # Partial update support is included.
     # =====================================================================
     def to_internal_value(self, data):
