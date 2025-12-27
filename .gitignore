@@ -12,7 +12,7 @@ media/
 .env
 venv/
 env/
-
+Pipfile
 
 # IDE
 .vscode/
