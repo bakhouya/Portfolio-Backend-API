@@ -1,19 +1,19 @@
 # =====================================================================================================================
 # Imports 
 # =====================================================================================================================
-from django.forms import ValidationError
-from rest_framework import generics, status
+from django.forms import ValidationError 
+from rest_framework import generics, status, viewsets 
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework_simplejwt.tokens import RefreshToken
-from django.shortcuts import get_object_or_404
-from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework.permissions import IsAuthenticated, IsAdminUser, AllowAny
 
 from django.contrib.auth import get_user_model
 User = get_user_model()
-from .models import Profile
-from .serializers import (CustomLoginUserSerializer, UserSerializer, UpdateProfileSerializer, UpdateUserSerializer )
+from .models import Profile, About
+from .serializers import (CustomLoginUserSerializer, UserSerializer, UpdateProfileSerializer, UpdateUserSerializer, AboutSerializer)
+from utils.paginations import CustomDynamicPagination
+from utils.helpers import IsOwnerAdmin
 # =====================================================================================================================
    
 
@@ -159,4 +159,54 @@ class PortfolioView(generics.RetrieveAPIView):
     
     def get_object(self):
         return User.objects.filter(is_active=True).first()
+# =====================================================================================================================
+
+
+
+
+
+# =====================================================================================================================
+# ViewSet for Admin Management of the "About" Section.
+# Purpose:
+# - Enables admins to create, edit, delete, and view About section data.
+# - Links each record to the user who created it.
+# Permissions:
+# - IsAuthenticated: Must be logged in.
+# - IsAdminUser: Must be an admin.
+# - IsOwnerAdmin: Can only edit data owned by the user.
+# Properties:
+# - pagination_class: Dynamically segments results.
+# - queryset: Fetches all About records.
+# - serializer_class: Converts data to and from JSON.
+# Outcome:
+# - A secure, full-featured API (CRUD) for managing About content from the control panel.
+# =====================================================================================================================
+class AboutViewSet(viewsets.ModelViewSet):
+    queryset = About.objects.all()
+    serializer_class = AboutSerializer
+    pagination_class = CustomDynamicPagination
+    permission_classes = [IsAuthenticated, IsAdminUser, IsOwnerAdmin]
+    def perform_create(self, serializer):
+        serializer.save(user=self.request.user)
+# =====================================================================================================================
+# 
+# 
+# =====================================================================================================================
+# ViewSet is a public interface for displaying the About section.
+# Objective:
+# - To allow any visitor to view About content.
+# - Without allowing any modification or deletion.
+# Permissions:
+# - AllowAny: Available to everyone (even unregistered users).
+# Properties:
+# - ReadOnlyModelViewSet: Allows only (list, retrieve).
+# - pagination_class: Splits results to improve performance.
+# Outcome:
+# - A public and secure API for displaying About content on a website or application.
+# =====================================================================================================================
+class PublicAboutViewSet(viewsets.ReadOnlyModelViewSet):
+    queryset = About.objects.all()
+    serializer_class = AboutSerializer
+    pagination_class = CustomDynamicPagination
+    permission_classes = [AllowAny]  
 # =====================================================================================================================
