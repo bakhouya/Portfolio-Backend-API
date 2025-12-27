@@ -5,6 +5,7 @@ User = get_user_model()
 
 
 # ===================================================================================
+# CategorySkills Model
 # ===================================================================================
 class CategorySkill(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
@@ -25,6 +26,7 @@ class CategorySkill(models.Model):
 # 
 # 
 # ===================================================================================
+#  Skills Model
 # ===================================================================================
 class Skill(models.Model):
     SKILL_LEVEL_CHOICES = [
@@ -34,10 +36,11 @@ class Skill(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="skills")
     title = models.CharField(max_length=100, verbose_name="Title", unique=True)
+    description = models.TextField(default="")
     category = models.ForeignKey(CategorySkill, on_delete=models.CASCADE, related_name='skills', verbose_name="Category")
     level = models.CharField(max_length=20, choices=SKILL_LEVEL_CHOICES, verbose_name="Level")
     percentage = models.PositiveIntegerField(verbose_name="Percentage", help_text="0 to 100")
-    icon = models.CharField(max_length=50, blank=True, null=True, verbose_name="Icon")
+    icon = models.ImageField(upload_to='skills/', blank=True, null=True, verbose_name="Icon")
     color = models.CharField(max_length=7, default='#4A90E2', verbose_name="Color")
     status = models.BooleanField(default=True, verbose_name="Status")
     created_at = models.DateTimeField(auto_now_add=True)
@@ -51,5 +54,6 @@ class Skill(models.Model):
     def __str__(self):
         return self.title
 # ===================================================================================
+
 
 
