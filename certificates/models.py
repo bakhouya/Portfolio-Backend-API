@@ -12,8 +12,11 @@ class Certificate(models.Model):
     title = models.CharField(max_length=200, verbose_name="Title")
     description = models.TextField(blank=True, null=True, verbose_name="Description")
     issuing_organization = models.CharField(max_length=200, verbose_name="Issuing Organization")
+    # تاريخ الإصدار
     issue_date = models.DateField(verbose_name="Issue Date")
+    # تاريخ الانتهاء
     expiration_date = models.DateField(blank=True, null=True, verbose_name="Expiration Date")
+    # رقم الاعتماد
     credential_id = models.CharField(max_length=100, blank=True, null=True, verbose_name="Credential ID")
     credential_url = models.URLField(blank=True, null=True, verbose_name="Credential URL")
     image = models.ImageField(upload_to='certificates/', blank=True, null=True, verbose_name="Image")
