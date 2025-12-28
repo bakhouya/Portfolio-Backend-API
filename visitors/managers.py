@@ -103,14 +103,13 @@ class VisitorManager(models.Manager):
     # =========================================================================
     def is_new_visit(self, visitor):
         from .models import Visit
+        from django.utils import timezone
+        from datetime import timedelta
 
-        twenty_four_hours_ago = timezone.now() - timezone.timedelta(hours=24)
-
-        has_recent_visit = Visit.objects.filter(
-            visitor=visitor,
-            visit_time__gte=twenty_four_hours_ago
-        ).exists()
-
+        today = timezone.now().date()
+        yesterday = today - timedelta(days=1)
+        has_recent_visit = Visit.objects.filter(visitor=visitor, visit_date=today).exists()
+       
         return not has_recent_visit
 
     # =========================================================================
