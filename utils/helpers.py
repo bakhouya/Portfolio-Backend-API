@@ -1,6 +1,7 @@
 
-from rest_framework import  permissions
-
+from rest_framework import  permissions, serializers
+from utils.validator import DynamicValidator
+from django.core.exceptions import ValidationError
 
 
 # ========================================================================================= 
@@ -52,4 +53,32 @@ class IsOwnerAdmin(permissions.BasePermission):
         return obj.user == request.user
 # =====================================================================================================================
 
+
+
+
+# =====================================================================================================================
+# handler function to validate incoming data for serializers
+# =====================================================================================================================
+def validation_handler(serializer_class, model_class, rules, data, instance=None):
+    validator = DynamicValidator(model_class, instance=instance)
+    is_update = instance is not None   
+    try:
+        cleaned_data = validator.validate(data, rules, is_update=is_update)
+    except ValidationError as e:
+        raise serializers.ValidationError(e.message_dict)   
+    return cleaned_data
+
+def hanlde_validator(model_class, rules):
+    def to_internal_value(self, data):
+        cleaned_data = validation_handler( 
+            serializer_class=self.__class__,
+            model_class=model_class,
+            rules=rules,
+            data=data,
+            instance=self.instance
+        )
+        return super(self.__class__, self).to_internal_value(cleaned_data)
+    
+    return to_internal_value
+# =====================================================================================================================
 

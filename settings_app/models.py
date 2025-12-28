@@ -66,7 +66,7 @@ class PlatformSettings(models.Model):
 # 
 # 
 # ============================================================================================
-# Content Model
+# Content Model ( actice section option and data any section)
 # ============================================================================================
 class Content(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
@@ -173,6 +173,7 @@ class Content(models.Model):
 # 
 # 
 # ============================================================================================
+# Faq Model (Quiestion = title, Answer = description)
 # ============================================================================================
 class Faq(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
