@@ -61,6 +61,7 @@ urlpatterns = [
     path("api/", include("settings_app.urls")),
     path("api/", include("certificates.urls")),
     path("api/", include("educations.urls")),
+    path("api/", include("experiences.urls")),
 
      # ========================================================================================
     # Swagger URLs
