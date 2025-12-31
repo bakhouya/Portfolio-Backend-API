@@ -21,10 +21,11 @@ router.register(r'ad/educations', EducationViewSet, basename='educations')
 urlpatterns = [
     # include GRUD endoints admin educations & education types
     path('', include(router.urls)),
-    path("ad/educations/types/active/", ActiveEducationTypeView.as_view(), name="Active_types"),
+    # get list active education types
+    path("ad/educations-types/active/", ActiveEducationTypeView.as_view(), name="Active_types"),
     # # public educations endpoint
     path("public/educations/", PublicEducationView.as_view(), name="Public_educations"),
     # # public education detail endpoint
-    path("educations/<uuid:pk>/", PublicEducationDetailView.as_view(), name="Education_details"),
+    path("public/educations/<uuid:pk>/", PublicEducationDetailView.as_view(), name="Education_details"),
 ]
 # ======================================================================================
