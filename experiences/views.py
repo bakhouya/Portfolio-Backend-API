@@ -62,6 +62,10 @@ class ExperienceViewSet(viewsets.ModelViewSet):
 class PublicExperienceView(generics.ListAPIView):
     serializer_class = PublicExperinceSerializer
     permission_classes = [permissions.AllowAny]
+    filter_backends = [DjangoFilterBackend, filters.SearchFilter, filters.OrderingFilter]
+    filterset_class = ExperienceFilter
+    search_fields = ['title', 'company', 'description']
+    ordering_fields = ['start_date', 'created_at', 'updated_at']
     def get_queryset(self):
         queryset = Experience.objects.filter(status=True)
         return queryset

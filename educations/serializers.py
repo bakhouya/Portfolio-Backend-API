@@ -70,9 +70,12 @@ class EducationSerializer(serializers.ModelSerializer):
 # =====================================================================================================================
 
 
-
+# =====================================================================================================================
+# PublicEducationSerializer : for get public educations view
+# =====================================================================================================================
 class PublicEducationSerializer(serializers.ModelSerializer):
-    skills = TypeEducationSerialzer(read_only=True, source="type")
+    type_details = TypeEducationSerialzer(read_only=True, source="type")
     class Meta:
         model = Education
         fields = '__all__'
+# =====================================================================================================================
