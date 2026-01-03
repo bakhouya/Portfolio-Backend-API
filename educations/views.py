@@ -45,12 +45,11 @@ class EducationViewSet(viewsets.ModelViewSet):
     permission_classes = [permissions.IsAuthenticated, permissions.IsAdminUser]
     filter_backends = [DjangoFilterBackend, filters.SearchFilter, filters.OrderingFilter]
     filterset_class = EducationFilter
-    search_fields = ['field_of_study', 'institution', 'description']
+    search_fields = ['field_of_study', 'institution', 'description', 'location']
     ordering_fields = ['start_date', 'created_at', 'updated_at']
     def perform_create(self, serializer):
         serializer.save(user=self.request.user)
-# =====================================================================================================================
-
+# ====================================================================================================================
 
 
 
@@ -63,6 +62,10 @@ class EducationViewSet(viewsets.ModelViewSet):
 class PublicEducationView(generics.ListAPIView):
     serializer_class = PublicEducationSerializer
     permission_classes = [permissions.AllowAny]
+    filter_backends = [DjangoFilterBackend, filters.SearchFilter, filters.OrderingFilter]
+    filterset_class = EducationFilter
+    search_fields = ['field_of_study', 'institution', 'description', 'location']
+    ordering_fields = ['start_date', 'created_at', 'updated_at']
     def get_queryset(self):
         queryset = Education.objects.filter(status=True)
         return queryset

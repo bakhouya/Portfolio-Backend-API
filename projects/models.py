@@ -82,7 +82,16 @@ class ProjectImage(models.Model):
 
     def __str__(self):
         return self.project.title
+    
+
+    def delete(self, *args, **kwargs):
+        if self.image:
+            import os
+            if os.path.isfile(self.image.path):
+                os.remove(self.image.path)
+        super().delete(*args, **kwargs)
 # ========================================================================
+
 
 
 

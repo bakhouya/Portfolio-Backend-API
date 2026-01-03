@@ -74,7 +74,7 @@ class ExperienceSerializer(serializers.ModelSerializer):
 # PublicExperinceSerializer : for get public experiences view
 # =====================================================================================================================
 class PublicExperinceSerializer(serializers.ModelSerializer):
-    skills = TypeExperienceSerialzer(read_only=True, source="type")
+    type_details = TypeExperienceSerialzer(read_only=True, source="type")
     class Meta:
         model = Experience
         fields = '__all__'

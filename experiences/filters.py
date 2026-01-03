@@ -1,14 +1,11 @@
 
 import django_filters
 from .models import Experience
-from django.db.models import Q
 
 # ===================================================================================
 # Experience filter fields 
 # ===================================================================================
 class ExperienceFilter(django_filters.FilterSet):
-    # multi searching fields
-    search = django_filters.CharFilter(method='filter_search')
     # filter by type title or id
     type = django_filters.CharFilter(field_name='type__title', lookup_expr='icontains')
     type_id = django_filters.UUIDFilter(field_name='type__id')
@@ -21,13 +18,5 @@ class ExperienceFilter(django_filters.FilterSet):
 
     class Meta:
         model = Experience
-        fields = ['type', 'status', 'is_current', 'search', 'type_id', 'type', 'status', 'is_current', 'start_date_gte', 'end_date_lte']
-    
-    # method multi searching
-    def filter_search(self, queryset, name, value):
-        return queryset.filter(
-            Q(title__icontains=value) |
-            Q(description__icontains=value) |
-            Q(company__icontains=value) 
-        )
+        fields = ['type', 'status', 'is_current', 'type_id', 'type', 'status', 'is_current', 'start_date_gte', 'end_date_lte']
 # ===================================================================================
