@@ -63,6 +63,7 @@ urlpatterns = [
     path("api/", include("educations.urls")),
     path("api/", include("experiences.urls")),
     path("api/", include("services.urls")),
+    path("api/", include("projects.urls")),
 
      # ========================================================================================
     # Swagger URLs
