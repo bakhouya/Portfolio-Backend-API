@@ -41,6 +41,7 @@ INSTALLED_APPS = [
     'services',
     'contacts',
     "certificates",
+    "analytics"
 ]
 
 MIDDLEWARE = [
