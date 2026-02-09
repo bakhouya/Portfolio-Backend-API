@@ -30,7 +30,19 @@ class Profile(models.Model):
 
     def __str__(self):
         return self.user.username
-
+    
+    def delete(self, *args, **kwargs):
+        if self.avatar:
+            import os
+            if os.path.isfile(self.avatar.path):
+                os.remove(self.avatar.path)
+                
+        if self.cv_file:
+            import os
+            if os.path.isfile(self.cv_file.path):
+                os.remove(self.cv_file.path)
+        super().delete(*args, **kwargs)
+    
     # =============================================================
     # Create default data Profile 
     # =============================================================
@@ -89,4 +101,11 @@ class About(models.Model):
 
     def __str__(self):
         return self.title
+    
+    def delete(self, *args, **kwargs):
+        if self.image:
+            import os
+            if os.path.isfile(self.image.path):
+                os.remove(self.image.path)
+        super().delete(*args, **kwargs)
 # ==================================================================================

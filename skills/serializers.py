@@ -3,7 +3,7 @@
 # =====================================================================================================================
 from django.forms import ValidationError 
 from rest_framework import serializers 
-from utils.helpers import handle_file_update
+from utils.helpers import handle_file_update, hanlde_validator
 from utils.validator import DynamicValidator
 from .models import CategorySkill, Skill
 from .rules import CATEGORY_RULES, SKILLS_RULES
@@ -26,14 +26,7 @@ class CategorySkillSerializer(serializers.ModelSerializer):
     # Verification rules (CATEGORY_RULES) are applied.
     # Partial update support is included.
     # =====================================================================
-    def to_internal_value(self, data):
-        is_update = self.instance is not None
-        validator = DynamicValidator(CategorySkill, instance=self.instance if is_update else None)        
-        try:
-            validation_data = validator.validate(data, CATEGORY_RULES, is_update=is_update)
-        except ValidationError as error:
-            raise serializers.ValidationError(error.message_dict)
-        return super().to_internal_value(validation_data)
+    to_internal_value = hanlde_validator(model_class=CategorySkill, rules=CATEGORY_RULES)
     # =====================================================================
 # =====================================================================================================================
 # 
@@ -54,14 +47,7 @@ class SkillSerializer(serializers.ModelSerializer):
     # Verification rules (CATEGORY_RULES) are applied.
     # Partial update support is included.
     # =====================================================================
-    def to_internal_value(self, data):
-        is_update = self.instance is not None
-        validator = DynamicValidator(Skill, instance=self.instance if is_update else None)        
-        try:
-            validation_data = validator.validate(data, SKILLS_RULES, is_update=is_update)
-        except ValidationError as error:
-            raise serializers.ValidationError(error.message_dict)
-        return super().to_internal_value(validation_data)
+    to_internal_value = hanlde_validator(model_class=Skill, rules=SKILLS_RULES)
     # =====================================================================
     # 
     # 
@@ -83,35 +69,43 @@ class SkillSerializer(serializers.ModelSerializer):
         return instance
     # =====================================================================
 # =====================================================================================================================
-
-
-
-
-
+# 
+# 
 # =====================================================================================================================
-# PublicSkillSerializer
-# Serializer is for public display of skills
-# Used on the front end
-# No data modification is allowed.
 # =====================================================================================================================
-class PublicSkillSerializer(serializers.ModelSerializer):
+class ActiveSkillSerializer(serializers.ModelSerializer):
     class Meta:
         model = Skill
-        fields = ["id", "title", "description", "level", "percentage", "icon", "color"]
-        read_only_fields = fields
+        fields = ["id", "title", "icon"]
 # =====================================================================================================================
-# 
-# 
+
+
+
 # =====================================================================================================================
 # PublicCategorySkillSerializer
 # Serializer is used to display skill categories along with their associated skills.
 # It is used on the public skills page.
 # =====================================================================================================================
 class PublicCategorySkillSerializer(serializers.ModelSerializer):
-    skills = PublicSkillSerializer(many=True, read_only=True)
     class Meta:
         model = CategorySkill
-        fields = ["id", "title", "status",  "skills"]
+        fields = ["id", "title",]
         read_only_fields = fields
 # =====================================================================================================================
+# 
+# 
+# =====================================================================================================================
+# PublicSkillSerializer
+# Serializer is for public display of skills
+# Used on the front end
+# No data modification is allowed. , source="category"
+# =====================================================================================================================
+class PublicSkillSerializer(serializers.ModelSerializer):
+    category = PublicCategorySkillSerializer(read_only=True)
+    class Meta:
+        model = Skill
+        fields = ["id", "title", "description", "level", "percentage", "icon", "color", "category"]
+        read_only_fields = fields
+# =====================================================================================================================
+
 

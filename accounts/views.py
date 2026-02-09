@@ -8,10 +8,11 @@ from rest_framework.response import Response
 from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework.permissions import IsAuthenticated, IsAdminUser, AllowAny
 
+from django.contrib.auth import update_session_auth_hash
 from django.contrib.auth import get_user_model
 User = get_user_model()
 from .models import Profile, About
-from .serializers import (CustomLoginUserSerializer, UserSerializer, UpdateProfileSerializer, UpdateUserSerializer, AboutSerializer)
+from .serializers import (ChangePasswordSerializer, CustomLoginUserSerializer, UserSerializer, UpdateProfileSerializer, UpdateUserSerializer, AboutSerializer)
 from utils.paginations import CustomDynamicPagination
 from utils.helpers import IsOwnerAdmin
 # =====================================================================================================================
@@ -209,4 +210,21 @@ class PublicAboutViewSet(viewsets.ReadOnlyModelViewSet):
     serializer_class = AboutSerializer
     pagination_class = CustomDynamicPagination
     permission_classes = [AllowAny]  
+# =====================================================================================================================
+
+
+# =====================================================================================================================
+# Change Password View For AUTH
+# =====================================================================================================================
+class ChangePasswordView(APIView):
+    permission_classes = [IsAuthenticated]
+    
+    def post(self, request):
+        serializer = ChangePasswordSerializer(data=request.data, context={'request': request})
+        if not serializer.is_valid():
+            return Response({'errors': serializer.errors,}, status=status.HTTP_400_BAD_REQUEST)
+        
+        user = serializer.save()
+        update_session_auth_hash(request, user)
+        return Response({"detail": "Password Changed Successfully."}, status=status.HTTP_200_OK)
 # =====================================================================================================================

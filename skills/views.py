@@ -10,7 +10,7 @@ from utils.paginations import CustomDynamicPagination
 
 from skills.models import CategorySkill, Skill # Import Models 
 # import Serializers Skills and CategorySkill
-from .serializers import CategorySkillSerializer, SkillSerializer, PublicCategorySkillSerializer, PublicSkillSerializer
+from .serializers import ActiveSkillSerializer, CategorySkillSerializer, SkillSerializer, PublicCategorySkillSerializer, PublicSkillSerializer
 # =====================================================================================================================
 
 
@@ -43,7 +43,17 @@ class SkillsViewSet(viewsets.ModelViewSet):
     def perform_create(self, serializer):
         serializer.save(user=self.request.user)
 # =====================================================================================================================
-
+# 
+# 
+# =====================================================================================================================
+# Get list active Skills
+# =====================================================================================================================
+class ActiveSkillsView(generics.ListAPIView):
+    queryset = Skill.objects.filter(status=True)
+    serializer_class = ActiveSkillSerializer
+    pagination_class = None
+    permission_classes = [IsAuthenticated, IsAdminUser]
+# =====================================================================================================================
 
 
 
@@ -56,13 +66,11 @@ class SkillsViewSet(viewsets.ModelViewSet):
 # Prefetch_related was used to improve performance and reduce the number of queries
 # =====================================================================================================================
 class PublicSkillsView(generics.ListAPIView):
-    serializer_class = PublicCategorySkillSerializer
-    pagination_class = CustomDynamicPagination
+    serializer_class = PublicSkillSerializer
+    pagination_class = None
     permission_classes = [AllowAny]
     def get_queryset(self):
-        queryset = CategorySkill.objects.filter(status=True).prefetch_related(
-            Prefetch('skills', queryset=Skill.objects.filter(status=True))
-        )
+        queryset = Skill.objects.filter(status=True)
         return queryset
 # =====================================================================================================================
 # 

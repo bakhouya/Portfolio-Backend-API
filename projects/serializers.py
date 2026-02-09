@@ -68,9 +68,9 @@ class ProjectImageSerializer(serializers.ModelSerializer):
 class ProjectSerializer(serializers.ModelSerializer):
     user = serializers.StringRelatedField(read_only=True)
     type = serializers.UUIDField(write_only=True)
-    skills = serializers.ListField(child=serializers.UUIDField(), write_only=True)
-    images = serializers.ListField(write_only=True)
-
+    skills = serializers.PrimaryKeyRelatedField(many=True, queryset=Skill.objects.all())
+    # images = serializers.ListField(write_only=True)
+    images = serializers.ListField(child=serializers.ImageField(),write_only=True)
     type_details = TypeProjectSerialzer(read_only=True, source="type")  
     skills_details = ProjectSkillsSerializer(many=True, read_only=True, source="skills") 
     images_details = ProjectImageSerializer(many=True, read_only=True, source="images")
@@ -156,7 +156,7 @@ class ProjectSerializer(serializers.ModelSerializer):
         project = Project.objects.create(type=project_type, **data)
         # save skills in database 
         if skills:
-            skills = Skill.objects.filter(id__in=skills)
+            # skills = Skill.objects.filter(id__in=skills)
             project.skills.set(skills)
         # save images in databse
         for image in images:

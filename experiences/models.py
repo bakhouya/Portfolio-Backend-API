@@ -71,6 +71,13 @@ class Experience(models.Model):
 
     def __str__(self):
         return self.title  
+
+    def delete(self, *args, **kwargs):
+        if self.logo:
+            import os
+            if os.path.isfile(self.logo.path):
+                os.remove(self.logo.path)
+        super().delete(*args, **kwargs)
 # =====================================================================
 
 
