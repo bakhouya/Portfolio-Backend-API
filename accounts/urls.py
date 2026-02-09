@@ -3,7 +3,7 @@
 # ======================================================================================
 from django.urls import path, include
 from rest_framework.routers import DefaultRouter
-from .views import (CustomLoginView, AdminUserView, AdminProfileView, PortfolioView,AboutViewSet, PublicAboutViewSet)
+from .views import (ChangePasswordView, CustomLoginView, AdminUserView, AdminProfileView, PortfolioView,AboutViewSet, PublicAboutViewSet)
 from rest_framework_simplejwt.views import (TokenObtainPairView, TokenRefreshView,)
 # ======================================================================================
 
@@ -12,7 +12,7 @@ from rest_framework_simplejwt.views import (TokenObtainPairView, TokenRefreshVie
 # ======================================================================================
 router = DefaultRouter()
 router.register(r'ad/accounts/about', AboutViewSet, basename='Admin_about')  
-router.register(r'accounts/about', PublicAboutViewSet, basename='Public_about')  
+router.register(r'public/accounts/about', PublicAboutViewSet, basename='Public_about')  
 # ======================================================================================
 
 
@@ -25,13 +25,15 @@ urlpatterns = [
     # default auth Login
     path('auth/token/', TokenObtainPairView.as_view(), name='token_obtain_pair'),
     path('auth/token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
+    path('auth/change-password/', ChangePasswordView.as_view(), name='change-password'),
+
     # GET & UPDATE data user and Profile
     path('ad/accounts/user/', AdminUserView.as_view(), name='User'),
     path('ad/accounts/profile/', AdminProfileView.as_view(), name='Profile'),
     # get data user and profile 
-    path('accounts/user/data/', PortfolioView.as_view(), name='User_data'),
+    path('public/accounts/user/data/', PortfolioView.as_view(), name='User_data'),
     # include GRUD endponts section about
     path('', include(router.urls)),
-
+   
 ]
 # ======================================================================================

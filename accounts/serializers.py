@@ -7,11 +7,11 @@ from rest_framework import serializers
 from django.contrib.auth import authenticate
 from django.contrib.auth import get_user_model
 User = get_user_model() # Get User Model 
-
+from django.contrib.auth import update_session_auth_hash
 from .models import Profile, About
 from utils.validator import DynamicValidator # Import class handle dynamic Validate data 
-from utils.helpers import handle_file_update # import  method handle files(remove old file if updated)
-from .rules import USER_RULES, PROFILE_RULES, ABOUT_RULES # import rules validations use any model(User, Profile, About)
+from utils.helpers import handle_file_update, hanlde_validator, hanlde_validator # import  method handle files(remove old file if updated)
+from .rules import CHANGE_PASSWORD_RULES, USER_RULES, PROFILE_RULES, ABOUT_RULES # import rules validations use any model(User, Profile, About)
 # =====================================================================================================================
 
 
@@ -100,14 +100,7 @@ class UpdateProfileSerializer(serializers.ModelSerializer):
     # - Apply validation rules (PROFILE_RULES)
     # - Return clear errors if any are found
     # =====================================================================
-    def to_internal_value(self, data):
-        is_update = self.instance is not None
-        validator = DynamicValidator(Profile, instance=self.instance if is_update else None)        
-        try:
-            validation_data = validator.validate(data, PROFILE_RULES, is_update=is_update)
-        except ValidationError as error:
-            raise serializers.ValidationError(error.message_dict)
-        return super().to_internal_value(validation_data)
+    to_internal_value = hanlde_validator(model_class=Profile, rules=PROFILE_RULES)
     # =====================================================================
     # 
     # 
@@ -146,20 +139,11 @@ class UpdateUserSerializer(serializers.ModelSerializer):
         fields =  ['id', 'username', 'email', 'first_name', 'last_name']
         read_only_fields = ["id"]
     
-    # =====================================================================
-    # Dynamic validation
-    # Verification rules (USER_RULES) are applied.
-    # Partial update support is included.
-    # =====================================================================
-    def to_internal_value(self, data):
-        is_update = self.instance is not None
-        validator = DynamicValidator(User, instance=self.instance if is_update else None)        
-        try:
-            validation_data = validator.validate(data, USER_RULES, is_update=is_update)
-        except ValidationError as error:
-            raise serializers.ValidationError(error.message_dict)
-        return super().to_internal_value(validation_data)
-    # =====================================================================
+    # ========================================================================================
+    # Custom validator handlier
+    # ========================================================================================
+    to_internal_value = hanlde_validator(model_class=User, rules=USER_RULES)
+    # ========================================================================================
 
     # =====================================================================
     # Controlling the Format of Response Representation
@@ -188,20 +172,11 @@ class AboutSerializer(serializers.ModelSerializer):
         fields = '__all__'
         read_only_fields = ['id', 'created_at', 'updated_at', 'user']
 
-    # =====================================================================
-    # Dynamic validation
-    # Verification rules (ABOUT_RULES) are applied.
-    # Partial update support is included.
-    # =====================================================================
-    def to_internal_value(self, data):
-        is_update = self.instance is not None
-        validator = DynamicValidator(About, instance=self.instance if is_update else None)        
-        try:
-            validation_data = validator.validate(data, ABOUT_RULES, is_update=is_update)
-        except ValidationError as error:
-            raise serializers.ValidationError(error.message_dict)
-        return super().to_internal_value(validation_data)
-    # =====================================================================
+    # ========================================================================================
+    # Custom validator handlier
+    # ========================================================================================
+    to_internal_value = hanlde_validator(model_class=About, rules=ABOUT_RULES)
+    # ========================================================================================
     # 
     # 
     # =====================================================================
@@ -224,3 +199,39 @@ class AboutSerializer(serializers.ModelSerializer):
 # =====================================================================================================================
 
 
+
+
+class ChangePasswordSerializer(serializers.ModelSerializer):
+    old_password = serializers.CharField(write_only=True, required=True)
+    new_password = serializers.CharField(write_only=True, required=True)
+    confirm_password = serializers.CharField(write_only=True, required=True)
+
+    class Meta:
+        model = User
+        fields = ["old_password", "new_password", "confirm_password"]
+
+    # ========================================================================================
+    # Custom validator handlier
+    # ========================================================================================
+    to_internal_value = hanlde_validator(model_class=User, rules=CHANGE_PASSWORD_RULES)
+    # ========================================================================================
+    
+    def validate(self, data):
+        user = self.context["request"].user
+        old_password = data.get("old_password")
+        new_password = data.get("new_password")
+        confirm_password = data.get("confirm_password")
+        if not user.check_password(old_password):
+            raise serializers.ValidationError({"old_password": "Old password is incorrect."})
+        if new_password != confirm_password:
+            raise serializers.ValidationError({"confirm_password": "New passwords do not match."})
+        return data
+    
+    def save(self, **kwargs):
+        user = self.context["request"].user
+        new_password = self.validated_data.get("new_password")
+
+        user.set_password(new_password)
+        user.save()
+        
+        return user

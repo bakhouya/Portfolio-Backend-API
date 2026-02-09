@@ -14,7 +14,7 @@ USER_RULES = {
 # 
 # 
 # =============================================================================
-# User Validation Rules
+# Profile Validation Rules
 # =============================================================================
 PROFILE_RULES = {
     "job_title": ["required", "unique", "min:3", "max:200", "no_html"],
@@ -34,11 +34,21 @@ PROFILE_RULES = {
 # 
 # 
 # =============================================================================
-# User Validation Rules
+# about Validation Rules
 # =============================================================================
 ABOUT_RULES = {
     "title": ["required", "unique", "min:3", "max:200", "no_html"],
     "description": ["required", "no_html"],
     "image": ["file", "size:2", "extensions:jpg,jpeg,png,gif"],  
+}
+# =============================================================================
+
+# =============================================================================
+# change password Validation Rules
+# =============================================================================
+CHANGE_PASSWORD_RULES = {
+    "old_password": ["required", "min:8"],
+    "new_password": ["required", "min:8"],
+    "confirm_password": ["required", "min:8"]
 }
 # =============================================================================

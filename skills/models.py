@@ -53,6 +53,13 @@ class Skill(models.Model):
 
     def __str__(self):
         return self.title
+
+    def delete(self, *args, **kwargs):
+        if self.icon:
+            import os
+            if os.path.isfile(self.icon.path):
+                os.remove(self.icon.path)
+        super().delete(*args, **kwargs)
 # ===================================================================================
 
 
